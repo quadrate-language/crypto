@@ -40,3 +40,29 @@ test "crc32 streaming" {
 	c value 907060870 testing::assert_eq
 	c release
 }
+
+test "sha256 streaming multi-chunk" {
+	crypto::Sha256 {} -> h
+	h "Hello" update! -> h
+	h " World" update! -> h
+	h finish! "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e" testing::assert_eq
+	h release
+}
+
+test "crc32 streaming multi-chunk" {
+	crypto::Crc32 {} -> c
+	c "Hello" update -> c
+	c " World" update -> c
+	c value 1243066710 testing::assert_eq
+	c release
+}
+
+test "crc32 hex" {
+	"Hello" crypto::crc32_hex "f7d18982" testing::assert_eq
+	"" crypto::crc32_hex "00000000" testing::assert_eq
+}
+
+test "crc32 verify" {
+	"Hello" 4157704578 crypto::crc32_verify 1 testing::assert_eq
+	"Hello" 12345 crypto::crc32_verify 0 testing::assert_eq
+}
